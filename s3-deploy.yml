@@ -1,0 +1,30 @@
+name: Deploy Static Site to S3
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-to-s3:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout the code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Configure AWS Credentials
+      # This uses the official AWS action to log in safely
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 3. Sync to S3
+      - name: Sync files to S3 bucket
+        run: |
+          # The --delete flag removes files in S3 that you deleted in git
+          # keeping your bucket clean.
+          aws s3 sync . s3://${{ secrets.AWS_S3_BUCKET }} --delete --exclude ".git/*" --exclude ".github/*"
