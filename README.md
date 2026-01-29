@@ -8,6 +8,7 @@ Welcome to this collection of production-ready GitHub Actions workflows. This re
 | :--- | :--- | :--- |
 | `ec2-deploy.yml` | Full Stack Applications | **AWS EC2** (Ubuntu + Nginx + PM2) |
 | `s3-deploy.yml` | Static Websites | **AWS S3** (HTML/CSS/JS) |
+| `vite-react-deploy.yml` | React FE Static Websites using Node.js version and environment variable | **AWS S3** (REACT JS) |
 
 ---
 
