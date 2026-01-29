@@ -1,0 +1,46 @@
+name: Deploy Vite App to S3
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js (matches your package-lock.json)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      # 3. Install Dependencies (Clean Install)
+      - name: Install Dependencies
+        run: npm ci
+
+      # 4. Build the Project
+      # IMPORTANT: We inject the GEMINI_API_KEY here so Vite can bake it into the code.
+      - name: Build
+        run: npm run build
+        env:
+          YOUR_ENV_KEY: ${{ secrets.API_KEY }}
+
+      # 5. Configure AWS Credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 6. Sync 'dist' folder to S3
+      # Vite creates a 'dist' folder. We only sync that folder.
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./dist s3://${{ secrets.AWS_S3_BUCKET }} --delete
