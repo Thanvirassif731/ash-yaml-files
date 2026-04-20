@@ -11,12 +11,12 @@ provider "aws" {
 
 # ---DNS and SSL (Route 53 & ACM)---
 data "aws_route53_zone" "main" {
-  name = "thanvirassif.com"
+  name = "yourdomain.com"
 }
 
 resource "aws_acm_certificate" "cert" {
   provider          = aws.us_east_1
-  domain_name       = "www.test.thanvirassif.com"
+  domain_name       = "www.yourdomain.com"
   validation_method = "DNS"
 
   lifecycle {
@@ -51,7 +51,7 @@ resource "aws_acm_certificate_validation" "cert" {
 
 # ---S3 Bucket for Static Website Hosting---
 resource "aws_s3_bucket" "website_bucket" {
-  bucket = "www.test.thanvirassif.com"
+  bucket = "www.yourdomain.com"
 }
 
 resource "aws_s3_bucket_public_access_block" "block_public" {
@@ -82,7 +82,7 @@ resource "aws_cloudfront_distribution" "distro" {
 
   enabled             = true
   default_root_object = "index.html"
-  aliases             = ["www.test.thanvirassif.com"]
+  aliases             = ["www.yourdomain.com"]
 
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
@@ -134,7 +134,7 @@ resource "aws_s3_bucket_policy" "allow_cloudfront" {
 # Route 53 Alias Record
 resource "aws_route53_record" "www" {
   zone_id = data.aws_route53_zone.main.zone_id
-  name    = "www.test.thanvirassif.com"
+  name    = "www.yourdomain.com"
   type    = "A"
 
   alias {
@@ -153,5 +153,5 @@ output "cloudfront_distribution_id" {
 }
 
 output "website_url" {
-  value = "https://www.test.thanvirassif.com"
+  value = "https://www.yourdomain.com"
 }
